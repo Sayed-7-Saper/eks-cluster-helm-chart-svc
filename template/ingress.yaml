@@ -1,0 +1,56 @@
+{{- $fullName := include "myservice.fullname" . -}}
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }} #grid
+  #namespace: default
+  labels:
+    {{- include "myservice.labels" . | nindent 4 }}
+  annotations:
+    #kubernetes.io/ingress.class: "kong"
+
+    #nginx.ingress.kubernetes.io/upstream-connect_timeout: "300000"
+    #nginx.ingress.kubernetes.io/upstream-send_timeout: "300000"
+    #nginx.ingress.kubernetes.io/upstream-read_timeout: "300000"
+    #nginx.ingress.kubernetes.io/connect-timeout: "300000"
+
+    nginx.ingress.kubernetes.io/proxy-next-upstream: "off"
+    #nginx.ingress.kubernetes.io/proxy-connect-timeout: "300000"
+    #nginx.ingress.kubernetes.io/proxy-send-timeout: "300000"
+    #nginx.ingress.kubernetes.io/proxy-read-timeout: "300000"
+    #nginx.ingress.kubernetes.io/send-timeout: "300000"
+    #nginx.ingress.kubernetes.io/read-timeout: "300000"
+    nginx.ingress.kubernetes.io/client-body-buffer-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "10m"
+  
+
+spec:
+  ingressClassName: kong
+  # {{- if .Values.ingress.tls }}
+  # tls:
+  #   {{- range .Values.ingress.tls }}
+  rules:
+    - http:
+        paths:
+          - path: /grid
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: 80
+
+
+---
+kind: KongIngress
+apiVersion: configuration.konghq.com/v1
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: "kong"
+  name: timeout-kong-ingress
+proxy:
+  protocol: http
+  connect_timeout: 360000
+  read_timeout: 360000
+  write_timeout: 360000                  

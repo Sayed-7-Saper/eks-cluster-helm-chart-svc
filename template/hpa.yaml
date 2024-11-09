@@ -1,0 +1,60 @@
+{{- if .Values.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  #name: hpa-grid-live4
+  name: {{ include "myservice.fullname" . }}
+  #namespace: {{ .Values.global.namespace.nchdDMZNamespace }}
+  labels:
+    {{- include "myservice.labels" . | nindent 4 }}
+spec:
+  minReplicas: {{ .Values.autoscaling.minReplicas }} #1
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}   #4 
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "myservice.fullname" . }} #grid
+
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu #memory
+        target:
+          type: Utilization
+          averageUtilization: 50 ## this is 50% from the deployment request not limits
+
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 50
+
+  # - type: Pods
+  #   pods:
+  #     metric:
+  #       name: packets-per-second
+  #     target:
+  #       type: AverageValue
+  #       averageValue: 1k
+
+  # - type: Object
+  #   object:
+  #     metric:
+  #       name: requests-per-second
+  #     describedObject:
+  #       apiVersion: networking.k8s.io/v1beta1
+  #       kind: Ingress
+  #       name: main-route
+  #     target:
+  #       type: Value
+  #       value: 10k
+
+  # - type: External
+  #   external:
+  #     metric:
+  #       name: queue_messages_ready
+  #       selector: "queue=worker_tasks"
+  #     target:
+  #       type: AverageValue
+  #       averageValue: 30

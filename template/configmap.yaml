@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "myservice.fullname" . }}
+  #namespace: {{ .Values.global.namespace.nchdDMZNamespace }}
+#namespace: grid
+data:
+  NODE_ENV: {{ .Values.global.deployment.NODE_ENV }}
+  NODE_TLS_REJECT_UNAUTHORIZED: {{ .Values.global.deployment.NODE_TLS_REJECT_UNAUTHORIZED | quote  }}
+
+  APP_NAME: grid
+  #APP_ENV: production
+  APP_KEY: ...
+  #APP_DEBUG: "false"
+  #APP_URL: http://localhost
+  APP_TIMEZONE: UTC
+ 
+  QUEUE_CONNECTION: rabbitmq
+  RABBITMQ_QUEUE: S_scheduler
+  RABBITMQ_HOST: ...
+  RABBITMQ_PORT: "5671"
+  RABBITMQ_USER: live-dev
+  RABBITMQ_PASSWORD: ....
+  SERVICES_BASE_URL: https://....com/
+

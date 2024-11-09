@@ -1,0 +1,11 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "myservice.fullname" . }}
+  #namespace: {{ .Values.global.namespace.nchdDMZNamespace }}
+
+spec:
+  maxUnavailable: {{ .Values.global.deployment.maxUnavailable }}
+  selector:
+    matchLabels:
+      {{- include "myservice.selectorLabels" . | nindent 6 }}

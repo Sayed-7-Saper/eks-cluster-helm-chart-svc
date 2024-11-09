@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "myservice.fullname" . }}
+  #namespace: {{ .Values.global.namespace.nchdDMZNamespace }}
+  labels:
+    #app: grid
+    {{- include "myservice.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.global.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      #app: grid
+      {{- include "myservice.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        #app: grid
+        {{- include "myservice.selectorLabels" . | nindent 8 }}
+    spec:
+      # {{- with .Values.global.deployment.imagePullSecrets }}
+      # imagePullSecrets:
+      #   {{- toYaml . | nindent 8 }}
+      # {{- end }}
+      # serviceAccountName: {{ include "myservice.serviceAccountName" . }}
+      # securityContext:
+      #   {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }} #grid
+          # securityContext:
+          #   {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 4080
+
+          envFrom:
+          - configMapRef:
+              name: {{ include "myservice.fullname" . }} #grid-env
+
+          ports:
+            - name: http
+              containerPort: {{ .Values.global.deployment.POD_PORT }}
+              protocol: TCP    
+
+          #livenessProbe:
+          # httpGet:
+          #  scheme: HTTP
+          # path: /word-generator/ping
+          #port: 8030
+          #initialDelaySeconds: 5
+          #periodSeconds: 10
+          #timeoutSeconds: 3
+          #successThreshold: 1
+          #failureThreshold: 2
+
+          #resources:
+          #requests:
+          #memory: "2Gi"
+          #cpu: "700m"
+          #limits:
+          #memory: "4Gi"
+          #cpu: "900m"
+
