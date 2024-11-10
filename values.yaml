@@ -5,10 +5,10 @@
 
 replicaCount: 1
 image:
-  repository: ---repoURL---
+  repository: "724772066880.dkr.ecr.eu-west-1.amazonaws.com/dev-agentapp"
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "staging-efa85897"
+  tag: "70"
 imagePullSecrets:
   - name: harbor-registery-secret
 nameOverride: ""
